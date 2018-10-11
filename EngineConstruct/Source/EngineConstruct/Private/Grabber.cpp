@@ -37,12 +37,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!ensure(PhysicsHandle)) { return; }
 
+	
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		//TODO fix shaky-movement after grabbing
 		PhysicsHandle->GrabbedComponent->UnWeldFromParent();
 		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(true);
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
+		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0));
+		
 	}
 }
 
@@ -56,7 +58,7 @@ void UGrabber::Grab()
 
 	auto HitComponent = Hit.GetComponent();
 
-	if (HitComponent)
+	if (HitComponent && HitComponent->GetAttachParent())
 	{
 		PhysicsHandle->GrabComponentAtLocation(
 			HitComponent,
