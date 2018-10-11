@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Public/DrawDebugHelpers.h"
+#include "Components/PrimitiveComponent.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -28,11 +29,6 @@ void UGrabber::BeginPlay()
 void UGrabber::SetupPhysicsHandleComponent()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-
-	if (!ensure(PhysicsHandle))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Missing PhHandle"));
-	}
 }
 
 // Called every frame
@@ -40,8 +36,59 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FHitResult kKk = GetFirstPhysicsBodyInReach();
-	// ...
+	if (!ensure(PhysicsHandle)) { return; }
+
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
+	}
+}
+
+void UGrabber::Grab()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+	
+	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));
+
+	FHitResult Hit = GetFirstPhysicsBodyInReach();
+
+	auto HitComponent = Hit.GetComponent();
+
+	if (HitComponent)
+	{
+		PhysicsHandle->GrabComponentAtLocation(
+			HitComponent,
+			NAME_None,
+			HitComponent->GetComponentLocation()
+		);
+	}
+
+}
+
+void UGrabber::Release()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Releasing"));
+
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
+}
+
+FVector UGrabber::CreateLineTraceEnd()
+{
+	FVector PlayerLocation;
+	FRotator PlayerRotation;
+	float Reach = 200.0f;
+
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerLocation,
+		PlayerRotation
+	);
+
+	return PlayerLocation + PlayerRotation.Vector() * Reach;
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
@@ -56,7 +103,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 		PlayerRotation
 	);
 
-	FVector LineTraceEnd = PlayerLocation + PlayerRotation.Vector() * Reach;
+	FVector LineTraceEnd = CreateLineTraceEnd();
 
 	//Players current location and rotation
 	//UE_LOG(LogTemp, Warning, TEXT("%s player location"), *(PlayerLocation.ToString()));
