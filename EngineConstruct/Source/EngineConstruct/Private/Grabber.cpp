@@ -35,11 +35,13 @@ void UGrabber::SetupPhysicsHandleComponent()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	if (!ensure(PhysicsHandle)) { return; }
 
 	if (PhysicsHandle->GrabbedComponent)
 	{
+		//TODO fix shaky-movement after grabbing
+		PhysicsHandle->GrabbedComponent->UnWeldFromParent();
+		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(true);
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
 	}
 }
@@ -81,7 +83,7 @@ FVector UGrabber::CreateLineTraceEnd()
 {
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
-	float Reach = 200.0f;
+	float Reach = 200.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerLocation,
@@ -95,7 +97,6 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
-	float Reach = 200.0f;
 
 	// Player viewpoint
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
