@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Public/DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -70,6 +71,17 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 		LineTraceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams
+	);
+
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation - FVector(0.f, 0.f, 30.f),
+		LineTraceEnd,
+		FColor::Red,
+		false,
+		0.f,
+		0.f,
+		10.f
 	);
 
 	UPrimitiveComponent* ActorHit = HitResult.GetComponent();
