@@ -28,4 +28,8 @@ private:
 	UPhysicsHandleComponent * PhysicsHandle = nullptr;
 	
 	void SetupPhysicsHandleComponent();
+
+	const FHitResult GetFirstPhysicsBodyInReach();
+
+	FHitResult HitResult;
 };

@@ -39,6 +39,44 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	FHitResult kKk = GetFirstPhysicsBodyInReach();
 	// ...
 }
 
+const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
+{
+	FVector PlayerLocation;
+	FRotator PlayerRotation;
+	float Reach = 200.0f;
+
+	// Player viewpoint
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerLocation,
+		PlayerRotation
+	);
+
+	FVector LineTraceEnd = PlayerLocation + PlayerRotation.Vector() * Reach;
+
+	//Players current location and rotation
+	//UE_LOG(LogTemp, Warning, TEXT("%s player location"), *(PlayerLocation.ToString()));
+	//UE_LOG(LogTemp, Warning, TEXT("%s player rotation"), *(PlayerRotation.ToString()));
+		
+	// Ray-cast out to reach distance
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+
+	GetWorld()->LineTraceSingleByObjectType(
+		HitResult,
+		PlayerLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParams
+	);
+
+	UPrimitiveComponent* ActorHit = HitResult.GetComponent();
+	if (ActorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Detected: %s"), *(Cast<USceneComponent>(ActorHit)->GetName()));
+	}
+
+	return HitResult;
+}
