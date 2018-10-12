@@ -40,8 +40,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->GrabbedComponent->UnWeldFromParent();
-		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(true);
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0));
 		
@@ -58,13 +56,19 @@ void UGrabber::Grab()
 
 	auto HitComponent = Hit.GetComponent();
 
-	if (HitComponent && HitComponent->GetAttachParent())
+	//Check if we grabbed something
+		//And it has parent (it is attached to anything)
+			//And it has no children (cannot detach more than 1 object from engine at one go)
+	if (HitComponent && HitComponent->GetAttachParent() && HitComponent->GetAttachChildren().Num() == 0)
 	{
 		PhysicsHandle->GrabComponentAtLocation(
 			HitComponent,
 			NAME_None,
 			HitComponent->GetComponentLocation()
 		);
+
+		HitComponent->UnWeldFromParent();
+		HitComponent->SetSimulatePhysics(true);
 	}
 
 }
