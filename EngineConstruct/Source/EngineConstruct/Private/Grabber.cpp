@@ -43,7 +43,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0));
-		
 	}
 }
 
@@ -51,6 +50,9 @@ void UGrabber::Grab()
 {
 	if (!ensure(PhysicsHandle)) { return; }
 	
+	//Prevent grabbing if already grabbed something
+	if (PhysicsHandle->GrabbedComponent) { return; }
+
 	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));
 
 	FHitResult Hit = GetFirstPhysicsBodyInReach();
@@ -69,9 +71,16 @@ void UGrabber::Grab()
 			NAME_None,
 			HitComponent->GetComponentLocation()
 		);
-
+		
 		HitComponent->UnWeldFromParent();
 		HitComponent->SetSimulatePhysics(true);
+
+		//TODO later use it in method that reattaches engine part
+		UE_LOG(LogTemp, Warning, TEXT("%s had parent %s and was attached at %s"),
+			*(HitComponent->GetName()),
+			*(Cast<UEnginePart>(HitComponent)->PreviouslyAttachedParent()->GetName()),
+			*(Cast<UEnginePart>(HitComponent)->PreviouslyAttachedToSocket().ToString())
+		);	
 	}
 
 }
@@ -84,7 +93,11 @@ void UGrabber::Release()
 
 	if (PhysicsHandle->GrabbedComponent)
 	{
+		auto GrabbedPart = PhysicsHandle->GrabbedComponent;
 		PhysicsHandle->ReleaseComponent();
+
+		//TODO decide if we want to let it freely move around or turn it's physics off
+		GrabbedPart->SetSimulatePhysics(false);
 	}
 }
 
