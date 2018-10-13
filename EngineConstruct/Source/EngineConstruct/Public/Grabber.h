@@ -27,6 +27,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Release();
 
+	UFUNCTION(BlueprintCallable)
+		void RotateXAxle();
+
+	UFUNCTION(BlueprintCallable)
+		void RotateYAxle();
+
+	UFUNCTION(BlueprintCallable)
+		void RotateZAxle();
+
+	UFUNCTION(BlueprintCallable)
+		void RotateToZeros();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -41,4 +53,6 @@ private:
 	FHitResult HitResult;
 
 	FVector CreateLineTraceEnd();
+
+	FRotator CurrentComponentRotation = FRotator(0, 0, 0);
 };

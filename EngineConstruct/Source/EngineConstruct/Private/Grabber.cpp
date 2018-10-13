@@ -42,7 +42,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
-		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0));
+		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0,0,0) + CurrentComponentRotation);
 	}
 }
 
@@ -82,7 +82,6 @@ void UGrabber::Grab()
 			*(Cast<UEnginePart>(HitComponent)->PreviouslyAttachedToSocket().ToString())
 		);	
 	}
-
 }
 
 void UGrabber::Release()
@@ -99,6 +98,51 @@ void UGrabber::Release()
 		//TODO decide if we want to let it freely move around or turn it's physics off
 		GrabbedPart->SetSimulatePhysics(false);
 	}
+}
+
+void UGrabber::RotateXAxle()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	//If there's nothing to rotate quit
+	if (!(PhysicsHandle->GrabbedComponent)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Rotating in X Axle"));
+	CurrentComponentRotation.Roll += 8.f;
+}
+
+void UGrabber::RotateYAxle()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	//If there's nothing to rotate quit
+	if (!(PhysicsHandle->GrabbedComponent)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Rotating in Y Axle"));
+	CurrentComponentRotation.Pitch += 8.f;
+}
+
+void UGrabber::RotateZAxle()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	//If there's nothing to rotate quit
+	if (!(PhysicsHandle->GrabbedComponent)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Rotating in Z Axle"));
+	CurrentComponentRotation.Yaw += 8.f;
+}
+
+void UGrabber::RotateToZeros()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	if (!(PhysicsHandle->GrabbedComponent)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Reset rotation to (0,0,0)"));
+	CurrentComponentRotation.Roll = 0.f;
+	CurrentComponentRotation.Pitch = 0.f;
+	CurrentComponentRotation.Yaw = 0.f;
 }
 
 FVector UGrabber::CreateLineTraceEnd()
