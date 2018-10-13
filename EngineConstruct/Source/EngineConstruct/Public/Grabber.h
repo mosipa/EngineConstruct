@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RotateToZeros();
 
+	UFUNCTION(BlueprintCallable)
+		void ReattachGrabbedComponent();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -55,4 +58,6 @@ private:
 	FVector CreateLineTraceEnd();
 
 	FRotator CurrentComponentRotation = FRotator(0, 0, 0);
+
+	void MoveAndRotateGrabbedComponent();
 };

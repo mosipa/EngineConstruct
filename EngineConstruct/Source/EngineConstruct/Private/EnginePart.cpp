@@ -10,6 +10,12 @@ void UEnginePart::BeginPlay()
 
 	SocketName = this->GetAttachSocketName();
 
+	FTransform PartLocationAndRotation = this->GetRelativeTransform();
+	FQuat QuatPartRotation = PartLocationAndRotation.GetRotation();
+
+	PartLocation = PartLocationAndRotation.GetLocation();
+	PartRotation = QuatPartRotation.Rotator();
+
 	if (Parent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s have parent %s"), *(this->GetName()), *(Parent->GetName()));
@@ -19,6 +25,9 @@ void UEnginePart::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is attached at %s"), *(this->GetName()), *(SocketName.ToString()));
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s have socket location at %s"), *(this->GetName()), *(PartLocation.ToString()));
+	UE_LOG(LogTemp, Warning, TEXT("%s have socket rotation at %s"), *(this->GetName()), *(PartRotation.ToString()));
 }
 
 USceneComponent* UEnginePart::PreviouslyAttachedParent() const
@@ -29,4 +38,14 @@ USceneComponent* UEnginePart::PreviouslyAttachedParent() const
 FName UEnginePart::PreviouslyAttachedToSocket() const
 {
 	return SocketName;
+}
+
+FVector UEnginePart::GetPartLocation() const
+{
+	return PartLocation;
+}
+
+FRotator UEnginePart::GetPartRotation() const
+{
+	return PartRotation;
 }

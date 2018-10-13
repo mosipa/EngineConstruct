@@ -36,13 +36,18 @@ void UGrabber::SetupPhysicsHandleComponent()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	MoveAndRotateGrabbedComponent();
+}
+
+void UGrabber::MoveAndRotateGrabbedComponent()
+{
 	if (!ensure(PhysicsHandle)) { return; }
 
-	
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
-		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0,0,0) + CurrentComponentRotation);
+		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0) + CurrentComponentRotation);
 	}
 }
 
@@ -100,14 +105,45 @@ void UGrabber::Release()
 	}
 }
 
+void UGrabber::ReattachGrabbedComponent()
+{
+	if (!ensure(PhysicsHandle)) { return; }
+
+	//If there's nothing to reattach - quit
+	if (!(PhysicsHandle->GrabbedComponent)) { return; }
+
+	UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
+
+	auto GrabbedPart = PhysicsHandle->GrabbedComponent;
+	PhysicsHandle->ReleaseComponent();
+
+	FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
+		EAttachmentRule::SnapToTarget, //Location
+		EAttachmentRule::SnapToTarget, //Rotation
+		EAttachmentRule::SnapToTarget, //Scale
+		true
+	);
+
+	GrabbedPart->AttachToComponent(
+		Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent(),
+		AttachmentRules,
+		Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket()
+		);
+
+	GrabbedPart->SetRelativeRotation(Cast<UEnginePart>(GrabbedPart)->GetPartRotation());
+	GrabbedPart->SetRelativeLocation(Cast<UEnginePart>(GrabbedPart)->GetPartLocation());
+	GrabbedPart->SetSimulatePhysics(false);
+
+	UE_LOG(LogTemp, Warning, TEXT("Parent: %s"), *(GrabbedPart->GetAttachParent()->GetName()));
+}
+
 void UGrabber::RotateXAxle()
 {
 	if (!ensure(PhysicsHandle)) { return; }
 
-	//If there's nothing to rotate quit
+	//If there's nothing to rotate - quit
 	if (!(PhysicsHandle->GrabbedComponent)) { return; }
 
-	UE_LOG(LogTemp, Warning, TEXT("Rotating in X Axle"));
 	CurrentComponentRotation.Roll += 8.f;
 }
 
@@ -115,10 +151,9 @@ void UGrabber::RotateYAxle()
 {
 	if (!ensure(PhysicsHandle)) { return; }
 
-	//If there's nothing to rotate quit
+	//If there's nothing to rotate - quit
 	if (!(PhysicsHandle->GrabbedComponent)) { return; }
 
-	UE_LOG(LogTemp, Warning, TEXT("Rotating in Y Axle"));
 	CurrentComponentRotation.Pitch += 8.f;
 }
 
@@ -126,10 +161,9 @@ void UGrabber::RotateZAxle()
 {
 	if (!ensure(PhysicsHandle)) { return; }
 
-	//If there's nothing to rotate quit
+	//If there's nothing to rotate - quit
 	if (!(PhysicsHandle->GrabbedComponent)) { return; }
 
-	UE_LOG(LogTemp, Warning, TEXT("Rotating in Z Axle"));
 	CurrentComponentRotation.Yaw += 8.f;
 }
 
@@ -137,9 +171,9 @@ void UGrabber::RotateToZeros()
 {
 	if (!ensure(PhysicsHandle)) { return; }
 
+	//If there's nothing to rotate - quit
 	if (!(PhysicsHandle->GrabbedComponent)) { return; }
 
-	UE_LOG(LogTemp, Warning, TEXT("Reset rotation to (0,0,0)"));
 	CurrentComponentRotation.Roll = 0.f;
 	CurrentComponentRotation.Pitch = 0.f;
 	CurrentComponentRotation.Yaw = 0.f;

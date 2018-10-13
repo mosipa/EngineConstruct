@@ -22,9 +22,16 @@ private:
 
 	FName SocketName = EName::NAME_None;
 
+	FVector PartLocation = FVector(0, 0, 0);
+
+	FRotator PartRotation = FRotator(0, 0, 0);
+
 public:
 	USceneComponent* PreviouslyAttachedParent() const;
 
 	FName PreviouslyAttachedToSocket() const;
 
+	FVector GetPartLocation() const;
+
+	FRotator GetPartRotation() const;
 };
