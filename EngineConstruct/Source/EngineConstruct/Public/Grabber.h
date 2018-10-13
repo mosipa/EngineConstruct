@@ -7,6 +7,7 @@
 #include "Grabber.generated.h"
 
 class UPhysicsHandleComponent;
+class UEnginePart;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ENGINECONSTRUCT_API UGrabber : public UActorComponent

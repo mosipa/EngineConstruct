@@ -5,6 +5,7 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Public/DrawDebugHelpers.h"
 #include "Components/PrimitiveComponent.h"
+#include "EnginePart.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -56,10 +57,12 @@ void UGrabber::Grab()
 
 	auto HitComponent = Hit.GetComponent();
 
-	//Check if we grabbed something
-		//And it has parent (it is attached to anything)
-			//And it has no children (cannot detach more than 1 object from engine at one go)
-	if (HitComponent && HitComponent->GetAttachParent() && HitComponent->GetAttachChildren().Num() == 0)
+	//Prevent crashing
+	if (!HitComponent) { return; }
+
+	//Check if grabbed object is a EnginePart type
+		//And it has no children (cannot detach more than 1 object from engine at one go)
+	if (HitComponent->GetClass()->IsChildOf<UEnginePart>() && HitComponent->GetAttachChildren().Num() == 0)
 	{
 		PhysicsHandle->GrabComponentAtLocation(
 			HitComponent,
