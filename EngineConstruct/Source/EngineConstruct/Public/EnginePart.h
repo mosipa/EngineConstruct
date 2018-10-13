@@ -14,7 +14,17 @@ class ENGINECONSTRUCT_API UEnginePart : public UStaticMeshComponent
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 	
-	
-	
+private:
+	USceneComponent* Parent = nullptr;
+
+	FName SocketName = EName::NAME_None;
+
+public:
+	USceneComponent* PreviouslyAttachedParent() const;
+
+	FName PreviouslyAttachedToSocket() const;
+
 };
