@@ -112,29 +112,41 @@ void UGrabber::ReattachGrabbedComponent()
 	//If there's nothing to reattach - quit
 	if (!(PhysicsHandle->GrabbedComponent)) { return; }
 
-	UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
-
 	auto GrabbedPart = PhysicsHandle->GrabbedComponent;
-	PhysicsHandle->ReleaseComponent();
+	auto Parent = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent();
 
-	FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
-		EAttachmentRule::SnapToTarget, //Location
-		EAttachmentRule::SnapToTarget, //Rotation
-		EAttachmentRule::SnapToTarget, //Scale
-		true
-	);
+	//Check if parent is UEnginePart class AND it is attached to its parent
+		//Or parent is not UEnginePart class (so it dont have parent)
+	if ((Parent->GetClass()->IsChildOf<UEnginePart>() && Parent->GetAttachParent() != nullptr)
+		|| (Parent->GetClass()->IsChildOf<UEnginePart>() == false))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
 
-	GrabbedPart->AttachToComponent(
-		Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent(),
-		AttachmentRules,
-		Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket()
+		PhysicsHandle->ReleaseComponent();
+
+		FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
+			EAttachmentRule::SnapToTarget, //Location
+			EAttachmentRule::SnapToTarget, //Rotation
+			EAttachmentRule::SnapToTarget, //Scale
+			true
 		);
 
-	GrabbedPart->SetRelativeRotation(Cast<UEnginePart>(GrabbedPart)->GetPartRotation());
-	GrabbedPart->SetRelativeLocation(Cast<UEnginePart>(GrabbedPart)->GetPartLocation());
-	GrabbedPart->SetSimulatePhysics(false);
+		GrabbedPart->AttachToComponent(
+			Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent(),
+			AttachmentRules,
+			Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket()
+		);
 
-	UE_LOG(LogTemp, Warning, TEXT("Parent: %s"), *(GrabbedPart->GetAttachParent()->GetName()));
+		GrabbedPart->SetRelativeRotation(Cast<UEnginePart>(GrabbedPart)->GetPartRotation());
+		GrabbedPart->SetRelativeLocation(Cast<UEnginePart>(GrabbedPart)->GetPartLocation());
+		GrabbedPart->SetSimulatePhysics(false);
+
+		UE_LOG(LogTemp, Warning, TEXT("Parent: %s"), *(GrabbedPart->GetAttachParent()->GetName()));
+	}	
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Parent is not attached to its parent"));
+	}
 }
 
 void UGrabber::RotateXAxle()
