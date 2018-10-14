@@ -61,11 +61,13 @@ private:
 
 	void MoveAndRotateGrabbedComponent();
 
-	UPROPERTY(EditAnywhere, Category = "Setup")
+	UPROPERTY(EditAnywhere, Category = "Socket-Setup")
 		double SocketRadius = 5;
 
-	UPROPERTY(EditAnywhere, Category = "Setup")
+	UPROPERTY(EditAnywhere, Category = "Socket-Setup")
 		int32 SocketSegments = 25;
 
 	void DrawSocketLocationOfGrabbedObject();
+
+	float GetDistanceToSocket();
 };

@@ -58,8 +58,12 @@ void UGrabber::DrawSocketLocationOfGrabbedObject()
 	//Get and draw its socket's location while object is grabbed
 	auto GrabbedPart = PhysicsHandle->GrabbedComponent;
 	auto SocketWorldLocation = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent()->GetSocketLocation(Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket());
+	FColor SocketColor;
 
-	DrawDebugSphere(GetWorld(), SocketWorldLocation, SocketRadius, SocketSegments, FColor::Green);
+	if (GetDistanceToSocket() > 100.f) { SocketColor = FColor::Red; }
+	else { SocketColor = FColor::Green; }
+
+	DrawDebugSphere(GetWorld(), SocketWorldLocation, SocketRadius, SocketSegments, SocketColor);
 }
 
 void UGrabber::Grab()
@@ -90,13 +94,6 @@ void UGrabber::Grab()
 		
 		HitComponent->UnWeldFromParent();
 		HitComponent->SetSimulatePhysics(true);
-
-		//TODO later use it in method that reattaches engine part
-		UE_LOG(LogTemp, Warning, TEXT("%s had parent %s and was attached at %s"),
-			*(HitComponent->GetName()),
-			*(Cast<UEnginePart>(HitComponent)->PreviouslyAttachedParent()->GetName()),
-			*(Cast<UEnginePart>(HitComponent)->PreviouslyAttachedToSocket().ToString())
-		);	
 	}
 }
 
@@ -131,33 +128,55 @@ void UGrabber::ReattachGrabbedComponent()
 	if ((Parent->GetClass()->IsChildOf<UEnginePart>() && Parent->GetAttachParent() != nullptr)
 		|| (Parent->GetClass()->IsChildOf<UEnginePart>() == false))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
+		if (GetDistanceToSocket() < 100.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
 
-		PhysicsHandle->ReleaseComponent();
+			PhysicsHandle->ReleaseComponent();
 
-		FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
-			EAttachmentRule::SnapToTarget, //Location
-			EAttachmentRule::SnapToTarget, //Rotation
-			EAttachmentRule::SnapToTarget, //Scale
-			true
-		);
+			FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
+				EAttachmentRule::SnapToTarget, //Location
+				EAttachmentRule::SnapToTarget, //Rotation
+				EAttachmentRule::SnapToTarget, //Scale
+				true
+			);
 
-		GrabbedPart->AttachToComponent(
-			Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent(),
-			AttachmentRules,
-			Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket()
-		);
+			GrabbedPart->AttachToComponent(
+				Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent(),
+				AttachmentRules,
+				Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket()
+			);
 
-		GrabbedPart->SetRelativeRotation(Cast<UEnginePart>(GrabbedPart)->GetPartRotation());
-		GrabbedPart->SetRelativeLocation(Cast<UEnginePart>(GrabbedPart)->GetPartLocation());
-		GrabbedPart->SetSimulatePhysics(false);
+			GrabbedPart->SetRelativeRotation(Cast<UEnginePart>(GrabbedPart)->GetPartRotation());
+			GrabbedPart->SetRelativeLocation(Cast<UEnginePart>(GrabbedPart)->GetPartLocation());
+			GrabbedPart->SetSimulatePhysics(false);
 
-		UE_LOG(LogTemp, Warning, TEXT("Parent: %s"), *(GrabbedPart->GetAttachParent()->GetName()));
+			UE_LOG(LogTemp, Warning, TEXT("Parent: %s"), *(GrabbedPart->GetAttachParent()->GetName()));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Too far from socket - unable to attach part. Get closer."));
+		}
 	}	
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Parent is not attached to its parent"));
 	}
+}
+
+float UGrabber::GetDistanceToSocket()
+{
+	auto GrabbedPart = PhysicsHandle->GrabbedComponent;
+
+	FVector SocketWorldLocation = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent()->GetSocketLocation(Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket());
+
+	FVector PlayerWorldLocation = GetOwner()->GetActorLocation();
+
+	FVector VectorLength = SocketWorldLocation - PlayerWorldLocation;
+
+	float Distance = FMath::Sqrt(FMath::Pow(VectorLength.X, 2) + FMath::Pow(VectorLength.Y, 2) + FMath::Pow(VectorLength.Z, 2));
+
+	return Distance;
 }
 
 void UGrabber::RotateXAxle()
@@ -206,7 +225,7 @@ FVector UGrabber::CreateLineTraceEnd()
 {
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
-	float Reach = 200.f;
+	float Reach = 75.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerLocation,
