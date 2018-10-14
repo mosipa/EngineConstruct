@@ -40,6 +40,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	MoveAndRotateGrabbedComponent();
 }
 
+void UGrabber::TurnOnHelperMode()
+{
+	if (HelperMode == EHelperMode::Off) { HelperMode = EHelperMode::On; }
+	else if (HelperMode == EHelperMode::On) { HelperMode = EHelperMode::Off; }
+}
+
 void UGrabber::MoveAndRotateGrabbedComponent()
 {
 	if (!ensure(PhysicsHandle)) { return; }
@@ -49,7 +55,10 @@ void UGrabber::MoveAndRotateGrabbedComponent()
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0) + CurrentComponentRotation);
 
-		DrawSocketLocationOfGrabbedObject();
+		if (HelperMode == EHelperMode::On)
+		{
+			DrawSocketLocationOfGrabbedObject();
+		}
 	}
 }
 

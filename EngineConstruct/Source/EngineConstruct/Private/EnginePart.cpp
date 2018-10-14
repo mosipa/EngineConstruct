@@ -15,19 +15,6 @@ void UEnginePart::BeginPlay()
 
 	PartLocation = PartLocationAndRotation.GetLocation();
 	PartRotation = QuatPartRotation.Rotator();
-
-	if (Parent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s have parent %s"), *(this->GetName()), *(Parent->GetName()));
-	}
-
-	if (SocketName != EName::NAME_None)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s is attached at %s"), *(this->GetName()), *(SocketName.ToString()));
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%s have socket location at %s"), *(this->GetName()), *(PartLocation.ToString()));
-	UE_LOG(LogTemp, Warning, TEXT("%s have socket rotation at %s"), *(this->GetName()), *(PartRotation.ToString()));
 }
 
 USceneComponent* UEnginePart::PreviouslyAttachedParent() const

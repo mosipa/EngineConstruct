@@ -9,6 +9,13 @@
 class UPhysicsHandleComponent;
 class UEnginePart;
 
+UENUM()
+enum class EHelperMode: uint8
+{
+	On,
+	Off
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ENGINECONSTRUCT_API UGrabber : public UActorComponent
 {
@@ -42,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ReattachGrabbedComponent();
 
+	UFUNCTION(BlueprintCallable)
+		void TurnOnHelperMode();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -70,4 +80,6 @@ private:
 	void DrawSocketLocationOfGrabbedObject();
 
 	float GetDistanceToSocket();
+
+	EHelperMode HelperMode = EHelperMode::Off;
 };
