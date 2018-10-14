@@ -60,4 +60,12 @@ private:
 	FRotator CurrentComponentRotation = FRotator(0, 0, 0);
 
 	void MoveAndRotateGrabbedComponent();
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		double SocketRadius = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Setup")
+		int32 SocketSegments = 25;
+
+	void DrawSocketLocationOfGrabbedObject();
 };

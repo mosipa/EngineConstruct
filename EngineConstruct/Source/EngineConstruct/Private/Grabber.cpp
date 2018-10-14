@@ -48,7 +48,18 @@ void UGrabber::MoveAndRotateGrabbedComponent()
 	{
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0) + CurrentComponentRotation);
+
+		DrawSocketLocationOfGrabbedObject();
 	}
+}
+
+void UGrabber::DrawSocketLocationOfGrabbedObject()
+{
+	//Get and draw its socket's location while object is grabbed
+	auto GrabbedPart = PhysicsHandle->GrabbedComponent;
+	auto SocketWorldLocation = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent()->GetSocketLocation(Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket());
+
+	DrawDebugSphere(GetWorld(), SocketWorldLocation, SocketRadius, SocketSegments, FColor::Green);
 }
 
 void UGrabber::Grab()
@@ -210,7 +221,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
 
-	// Player viewpoint
+	//Player's viewpoint
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerLocation,
 		PlayerRotation
@@ -218,7 +229,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 	FVector LineTraceEnd = CreateLineTraceEnd();
 
-	//Players current location and rotation
+	//Player's current location and rotation
 	//UE_LOG(LogTemp, Warning, TEXT("%s player location"), *(PlayerLocation.ToString()));
 	//UE_LOG(LogTemp, Warning, TEXT("%s player rotation"), *(PlayerRotation.ToString()));
 		
