@@ -53,7 +53,9 @@ void UGrabber::MoveAndRotateGrabbedComponent()
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
+		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(false);
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0) + CurrentComponentRotation);
+		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(true);
 
 		if (HelperMode == EHelperMode::On)
 		{
@@ -74,6 +76,8 @@ void UGrabber::DrawSocketLocationOfGrabbedObject()
 	if (GetDistanceToSocket() > 100.f) { SocketColor = FColor::Red; }
 	else 
 	{ 
+		//Parent is attached to the model
+			//or Parent is base of the model
 		if (Parent->GetAttachParent() != nullptr
 			|| Parent->GetClass()->IsChildOf<UEnginePart>() == false)
 		{
@@ -127,8 +131,6 @@ void UGrabber::Release()
 	{
 		auto GrabbedPart = PhysicsHandle->GrabbedComponent;
 		PhysicsHandle->ReleaseComponent();
-
-		//TODO decide if we want to let it freely move around or turn it's physics off
 		GrabbedPart->SetSimulatePhysics(false);
 	}
 }
@@ -245,7 +247,7 @@ FVector UGrabber::CreateLineTraceEnd()
 {
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
-	float Reach = 75.f;
+	float Reach = 100.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerLocation,
