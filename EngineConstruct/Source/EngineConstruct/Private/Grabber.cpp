@@ -69,8 +69,18 @@ void UGrabber::DrawSocketLocationOfGrabbedObject()
 	auto SocketWorldLocation = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent()->GetSocketLocation(Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedToSocket());
 	FColor SocketColor;
 
+	auto Parent = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent();
+
 	if (GetDistanceToSocket() > 100.f) { SocketColor = FColor::Red; }
-	else { SocketColor = FColor::Green; }
+	else 
+	{ 
+		if (Parent->GetAttachParent() != nullptr
+			|| Parent->GetClass()->IsChildOf<UEnginePart>() == false)
+		{
+			SocketColor = FColor::Green;
+		}
+		else { SocketColor = FColor::Red; }
+	}
 
 	DrawDebugSphere(GetWorld(), SocketWorldLocation, SocketRadius, SocketSegments, SocketColor);
 }
@@ -85,6 +95,7 @@ void UGrabber::Grab()
 	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));
 
 	FHitResult Hit = GetFirstPhysicsBodyInReach();
+	CurrentComponentRotation = FRotator(0.f, 0.f, 0.f);
 
 	auto HitComponent = Hit.GetComponent();
 
