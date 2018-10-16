@@ -6,15 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "EngineConstructGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ENGINECONSTRUCT_API AEngineConstructGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	
-	
-	
 };

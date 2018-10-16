@@ -6,15 +6,15 @@ void UEnginePart::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Parent = this->GetAttachParent();
+	this->Parent = this->GetAttachParent();
 
-	SocketName = this->GetAttachSocketName();
+	this->SocketName = this->GetAttachSocketName();
 
 	FTransform PartLocationAndRotation = this->GetRelativeTransform();
 	FQuat QuatPartRotation = PartLocationAndRotation.GetRotation();
 
-	PartLocation = PartLocationAndRotation.GetLocation();
-	PartRotation = QuatPartRotation.Rotator();
+	this->PartLocation = PartLocationAndRotation.GetLocation();
+	this->PartRotation = QuatPartRotation.Rotator();
 }
 
 USceneComponent* UEnginePart::PreviouslyAttachedParent() const

@@ -10,7 +10,7 @@ class UPhysicsHandleComponent;
 class UEnginePart;
 
 UENUM()
-enum class EHelperMode: uint8
+enum class EHelperMode : uint8
 {
 	On,
 	Off
@@ -57,29 +57,30 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPhysicsHandleComponent * PhysicsHandle = nullptr;
-	
-	void SetupPhysicsHandleComponent();
-
-	const FHitResult GetFirstPhysicsBodyInReach();
-
-	FHitResult HitResult;
-
-	FVector CreateLineTraceEnd();
-
-	FRotator CurrentComponentRotation = FRotator(0, 0, 0);
-
-	void MoveAndRotateGrabbedComponent();
-
 	UPROPERTY(EditAnywhere, Category = "Socket-Setup")
 		double SocketRadius = 5;
 
 	UPROPERTY(EditAnywhere, Category = "Socket-Setup")
 		int32 SocketSegments = 25;
 
+	UPhysicsHandleComponent * PhysicsHandle = nullptr;
+	
+	EHelperMode HelperMode = EHelperMode::Off;
+
+	FHitResult HitResult;
+
+	FRotator CurrentComponentRotation = FRotator(0, 0, 0);
+
+	void SetupPhysicsHandleComponent();
+
+	const FHitResult GetFirstPhysicsBodyInReach();
+	
+	FVector CreateLineTraceEnd();
+
+	void MoveAndRotateGrabbedComponent();
+	
 	void DrawSocketLocationOfGrabbedObject();
 
 	float GetDistanceToSocket();
 
-	EHelperMode HelperMode = EHelperMode::Off;
 };

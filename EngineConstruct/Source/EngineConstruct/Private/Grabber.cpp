@@ -17,12 +17,10 @@ UGrabber::UGrabber()
 	// ...
 }
 
-
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//Find and get PHComponent
 	SetupPhysicsHandleComponent();
 }
@@ -43,7 +41,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::TurnOnHelperMode()
 {
 	if (HelperMode == EHelperMode::Off) { HelperMode = EHelperMode::On; }
-	else if (HelperMode == EHelperMode::On) { HelperMode = EHelperMode::Off; }
+	else { HelperMode = EHelperMode::Off; }
 }
 
 void UGrabber::MoveAndRotateGrabbedComponent()
