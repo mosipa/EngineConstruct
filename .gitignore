@@ -76,6 +76,6 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 EngineConstruct/Intermediate/
-EngineConstruct/Content/
 EngineConstruct/Binaries/
 EngineConstruct/Saved/
+EngineConstruct/Content/StarterContent/
