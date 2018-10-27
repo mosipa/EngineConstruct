@@ -71,7 +71,7 @@ void UGrabber::DrawSocketLocationOfGrabbedObject()
 
 	auto Parent = Cast<UEnginePart>(GrabbedPart)->PreviouslyAttachedParent();
 
-	if (GetDistanceToSocket() > 100.f) { SocketColor = FColor::Red; }
+	if (GetDistanceToSocket() > 200.f) { SocketColor = FColor::Red; }
 	else 
 	{ 
 		//Parent is attached to the model
@@ -148,7 +148,7 @@ void UGrabber::ReattachGrabbedComponent()
 	if ((Parent->GetClass()->IsChildOf<UEnginePart>() && Parent->GetAttachParent() != nullptr)
 		|| (Parent->GetClass()->IsChildOf<UEnginePart>() == false))
 	{
-		if (GetDistanceToSocket() < 100.f)
+		if (GetDistanceToSocket() < 200.f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Reattaching component"));
 
@@ -245,7 +245,7 @@ FVector UGrabber::CreateLineTraceEnd()
 {
 	FVector PlayerLocation;
 	FRotator PlayerRotation;
-	float Reach = 100.f;
+	float Reach = 200.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerLocation,
