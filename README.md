@@ -6,3 +6,5 @@ While adding new Engine Models to project, make sure to turn off [Simulate Physi
 It will prevent model from acting wierd, also you don't really want to move the root.
 
 Trying to reattach, previously detached part, keep in mind that you can do it only for parts which parent is attached (root object doesn't have parent, but as it's base and it cannot be moved, reattaching works always for any part that has root as parent).
+
+All engine parts have to overlap pawn and other physics body.
