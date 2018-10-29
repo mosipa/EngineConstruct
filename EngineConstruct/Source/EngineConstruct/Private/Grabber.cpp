@@ -50,7 +50,7 @@ void UGrabber::MoveAndRotateGrabbedComponent()
 
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd());
+		PhysicsHandle->SetTargetLocation(CreateLineTraceEnd() - FVector(0.f, 0.f, 60.f));
 		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(false);
 		PhysicsHandle->GrabbedComponent->SetRelativeRotation(FRotator(0, 0, 0) + CurrentComponentRotation);
 		PhysicsHandle->GrabbedComponent->SetSimulatePhysics(true);
@@ -277,7 +277,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 	GetWorld()->LineTraceSingleByObjectType(
 		HitResult,
-		PlayerLocation,
+		PlayerLocation - FVector(0.f, 0.f, -30.f),
 		LineTraceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams
@@ -285,7 +285,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 	DrawDebugLine(
 		GetWorld(),
-		PlayerLocation - FVector(0.f, 0.f, 30.f),
+		PlayerLocation,
 		LineTraceEnd,
 		FColor::Red,
 		false,
