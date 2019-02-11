@@ -20,8 +20,6 @@ void UEnginePart::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, clas
 
 		if (this->GetAttachChildren().Num() == 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Obiekt: %s nachodzi na element: %s"), *(Pawn->GetName()), *(this->GetName()));
-
 			Pawn->SetOverlappingPart(true);
 			Pawn->SetOverlappedPart(Cast<UEnginePart>(OverlappedComp));
 		}
